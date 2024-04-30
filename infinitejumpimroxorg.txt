@@ -1,0 +1,108 @@
+-- Instances:
+local InfJumpGui = Instance.new("ScreenGui")
+local Main = Instance.new("Frame")
+local Top = Instance.new("Frame")
+local TextLabel = Instance.new("TextLabel")
+local close = Instance.new("TextButton")
+local InfiniteJump = Instance.new("TextButton")
+local infjumpenabled = false
+
+--Properties:
+InfJumpGui.Name = "InfJumpGui"
+InfJumpGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+InfJumpGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+Main.Name = "Main"
+Main.Parent = InfJumpGui
+Main.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+Main.Position = UDim2.new(0.414, 0, 0.425, 0)
+Main.Size = UDim2.new(0.172, 0, 0.099, 0)
+
+Top.Name = "Top"
+Top.Parent = Main
+Top.BackgroundColor3 = Color3.fromRGB(129, 207, 224)
+Top.BorderSizePixel = 0
+Top.Size = UDim2.new(1, 0, 0.231, 0)
+
+TextLabel.Parent = Top
+TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+TextLabel.BackgroundTransparency = 1
+TextLabel.Size = UDim2.new(0.928, 0, 1, 0)
+TextLabel.Font = Enum.Font.Code
+TextLabel.Text = "Infinite Jump by ImROxorg"
+TextLabel.TextColor3 = Color3.fromRGB(0, 0, 0)
+TextLabel.TextScaled = true
+TextLabel.TextSize = 14
+TextLabel.TextWrapped = true
+
+close.Name = "close"
+close.Parent = Top
+close.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+close.BackgroundTransparency = 1
+close.Position = UDim2.new(0.946, 0, 0, 0)
+close.Size = UDim2.new(0.054, 0, 1, 0)
+close.Font = Enum.Font.Code
+close.Text = "X"
+close.TextColor3 = Color3.fromRGB(0, 0, 0)
+close.TextScaled = true
+close.TextSize = 14
+close.TextWrapped = true
+
+InfiniteJump.Name = "InfiniteJump"
+InfiniteJump.Parent = Main
+InfiniteJump.BackgroundColor3 = Color3.fromRGB(129, 207, 224)
+InfiniteJump.BorderColor3 = Color3.fromRGB(0, 0, 0)
+InfiniteJump.Position = UDim2.new(0.113, 0, 0.326, 0)
+InfiniteJump.Size = UDim2.new(0.774, 0, 0.536, 0)
+InfiniteJump.Font = Enum.Font.Code
+InfiniteJump.Text = "Disabled"
+InfiniteJump.TextColor3 = Color3.fromRGB(0, 0, 0)
+InfiniteJump.TextSize = 24
+InfiniteJump.TextWrapped = true
+
+-- Scripts:
+local function closeScript()
+    close.MouseButton1Click:Connect(function()
+        local frame = close.Parent.Parent.Parent
+        frame:TweenPosition(UDim2.new(0.4, 0, 1.5, 0))
+        infjumpenabled = false
+        wait(1)
+        frame.Parent:Destroy()
+    end)
+end
+closeScript()
+
+local function infiniteJumpScript()
+    InfiniteJump.MouseButton1Click:Connect(function()
+        if infjumpenabled == false then
+            infjumpenabled = true
+            InfiniteJump.Text = "Enabled"
+        elseif infjumpenabled == true then
+            infjumpenabled = false
+            InfiniteJump.Text = "Disabled"
+        end
+    end)
+end
+infiniteJumpScript()
+
+local function draggableScript()
+    Main.Selectable = true
+    Main.Active = true
+    Main.Draggable = true
+end
+draggableScript()
+
+local function openingScript()
+    Main.Position = UDim2.new(0.33, 0, 2, 0)
+    Main:TweenPosition(UDim2.new(0.33, 0, 0.3, 0))
+end
+openingScript()
+
+local function infJumpScript()
+    game:GetService("UserInputService").JumpRequest:Connect(function()
+        if infjumpenabled == true then
+            game.Players.LocalPlayer.Character:FindFirstChild("Humanoid"):ChangeState("Jumping")
+        end
+    end)
+end
+infJumpScript()
